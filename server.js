@@ -1,5 +1,4 @@
-//mongo username=mateeniqbal840,
-//mongo password=YWpTTUm5kXNQAvYt
+
 const dotenv=require('dotenv')
 dotenv.config()
 const express=require('express')
