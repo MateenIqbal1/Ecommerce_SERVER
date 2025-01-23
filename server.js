@@ -28,13 +28,13 @@ mongoose.connect(process.env.MONGODB_URL)
     .then(() => console.log('Mongodb connected'))
     .catch(error => console.log(error));
 
-    app.use(cors({
-        origin: (origin, callback) => {
-            // Allow requests from any origin
-            callback(null, true);
-        },
-        credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-    }));
+    app.use(
+        cors({
+          origin: ["http://localhost:5173", "https://your-frontend-url.vercel.app"], // Allow local and deployed frontend
+          credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+        })
+      );
+      
 
 
 const PORT=process.env.PORT;
