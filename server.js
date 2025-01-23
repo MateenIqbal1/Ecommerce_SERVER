@@ -52,6 +52,8 @@ app.use('/api/common/feature', commonFeatureRouter)
 
 
 
-
+app.get("/", (req, res) => {
+    res.send("Hello from Vercel and server.js!");
+});
 
 app.listen(PORT,()=>console.log(`server is now running on the PORT ${PORT}`))
