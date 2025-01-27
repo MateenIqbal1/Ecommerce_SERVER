@@ -2,6 +2,8 @@ const paypal = require('../../helpers/paypal')
 const Order = require('../../models/Order')
 const Cart=require('../../models/Cart')
 const Product=require('../../models/Product')
+const dotenv=require('dotenv')
+dotenv.config()
 const createOrder = async (req, res) => {
     try {
         console.log("Request Body:", req.body); // Log the incoming request body
@@ -49,6 +51,8 @@ const createOrder = async (req, res) => {
         };
 
         console.log("PayPal Payment JSON:", create_payment_json);
+        console.log("Return URL:", `${process.env.CLIENT_BASE_URL}/shop/paypal-return`);
+        console.log("Cancel URL:", `${process.env.CLIENT_BASE_URL}/shop/paypal-cancel`);
 
         paypal.payment.create(create_payment_json, async (error, paymentInfo) => {
             if (error) {
