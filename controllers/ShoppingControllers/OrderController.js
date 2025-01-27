@@ -4,7 +4,20 @@ const Cart=require('../../models/Cart')
 const Product=require('../../models/Product')
 const createOrder = async (req, res) => {
     try {
+        console.log("Request Body:", req.body); // Log the incoming request body
+
         const { userId, cartItems, addressInfo, orderStatus, paymentMethod, paymentStatus, totalAmount, orderDate, orderUpdateDate, paymentId, payerId, cartId } = req.body;
+
+        // Validate required fields
+        if (!userId || !cartItems || !totalAmount) {
+            console.log("Validation failed: Missing required fields");
+            return res.status(400).json({
+                success: false,
+                message: 'Missing required fields'
+            });
+        }
+
+        console.log("Creating PayPal payment...");
 
         const create_payment_json = {
             intent: 'sale',
@@ -35,14 +48,19 @@ const createOrder = async (req, res) => {
             ]
         };
 
+        console.log("PayPal Payment JSON:", create_payment_json);
+
         paypal.payment.create(create_payment_json, async (error, paymentInfo) => {
             if (error) {
-                console.log("Error during PayPal payment creation:", error);
+                console.log("PayPal Error:", error.response || error); // Log the full PayPal error
                 return res.status(500).json({
                     success: false,
-                    message: 'Error while creating paypal payment'
+                    message: 'Error while creating PayPal payment',
+                    error: error.response || error.message
                 });
             } else {
+                console.log("PayPal Payment Info:", paymentInfo); // Log the PayPal payment info
+
                 const newlyCreatedOrder = new Order({
                     userId,
                     cartId,
@@ -60,21 +78,21 @@ const createOrder = async (req, res) => {
 
                 await newlyCreatedOrder.save();
 
-
                 const approvalURL = paymentInfo.links.find(link => link.rel === 'approval_url').href;
 
                 res.status(201).json({
                     success: true,
                     approvalURL,
-                    orderId: newlyCreatedOrder._id // Respond with the newly created order ID
+                    orderId: newlyCreatedOrder._id
                 });
             }
         });
     } catch (error) {
-        console.log("Error creating order:", error);
+        console.log("Server Error:", error); // Log the server error
         res.status(500).json({
             success: false,
-            message: 'Some Error Occurred'
+            message: 'Internal Server Error',
+            error: error.message
         });
     }
 };
