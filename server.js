@@ -26,12 +26,8 @@ app.use(express.json());
 mongoose.connect(process.env.MONGODB_URL)
     .then(() => console.log('Mongodb connected'))
     .catch(error => console.log(error));
-
     app.use(cors({
-        origin: (origin, callback) => {
-            // Allow requests from any origin
-            callback(null, true);
-        },
+        origin: 'https://ecomerce-frontend-seven.vercel.app', // Allow only this origin
         credentials: true, // Allow credentials (cookies, authorization headers, etc.)
     }));
 
